@@ -1,6 +1,14 @@
 package nick.reddit.vo;
 
-public class R<T> {
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+
+import java.io.Serializable;
+
+@Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class R<T> implements Serializable {
+    private static final long serialVersionUID = 7735505903525411417L;
     private static final int SUCCESS_CODE = 1;
     private static final int ERROR_CODE = 0;
 

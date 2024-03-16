@@ -1,13 +1,17 @@
 package nick.reddit.controller;
 
+import nick.reddit.pojo.Meme;
 import nick.reddit.service.MemeService;
 import nick.reddit.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping("/meme")
 public class RedditController {
 
@@ -23,5 +27,11 @@ public class RedditController {
         boolean isSuccessful = memeService.getTopMemes();
         if (isSuccessful) return R.ok("Crawl succeed!");
         else return R.error("Crawl failed");
+    }
+
+    @GetMapping("/list")
+    public R<List<Meme>> listTopMemes() {
+        System.out.println("hits");
+        return memeService.listTopMemes();
     }
 }

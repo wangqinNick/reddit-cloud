@@ -2,6 +2,9 @@ package nick.reddit.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import nick.reddit.pojo.Meme;
+import nick.reddit.vo.R;
+
+import java.util.List;
 
 /**
  * @author qinwang
@@ -17,4 +20,6 @@ public interface MemeService extends IService<Meme> {
      * @return true for successful operations
      */
     boolean getTopMemes();
+
+    R<List<Meme>> listTopMemes();
 }

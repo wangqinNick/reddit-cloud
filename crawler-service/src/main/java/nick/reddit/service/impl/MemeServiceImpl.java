@@ -9,6 +9,7 @@ import masecla.reddit4j.objects.Sorting;
 import nick.reddit.mapper.MemeMapper;
 import nick.reddit.pojo.Meme;
 import nick.reddit.service.MemeService;
+import nick.reddit.vo.R;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -49,15 +50,6 @@ public class MemeServiceImpl extends ServiceImpl<MemeMapper, Meme>
 
             for (RedditPost post : posts) {
                 if (post.getCreatedUtc() >= twentyFourHoursAgo) {
-                    System.out.println("Title: " + post.getTitle());
-                    System.out.println("Score: " + post.getScore());
-                    System.out.println("URL: " + post.getUrl());
-                    System.out.println("Author: " + post.getAuthor());
-                    System.out.println("NumComments: " + post.getNumComments());
-                    System.out.println("CreatedUtc: " + post.getCreatedUtc());
-                    System.out.println("Permalink: " + post.getPermalink());
-                    System.out.println();
-
                     this.memeList.add(
                             Meme.builder()
                                     .title(post.getTitle())
@@ -90,6 +82,12 @@ public class MemeServiceImpl extends ServiceImpl<MemeMapper, Meme>
     @Override
     public boolean getTopMemes() {
         return saveBatch(this.memeList);
+    }
+
+    @Override
+    public R<List<Meme>> listTopMemes() {
+        List<Meme> list = list();
+        return R.ok(list);
     }
 }
 
