@@ -12,8 +12,9 @@
 <body>
 <div id="app">
     <h1>Top 20 memes</h1>
+    <p v-if="collectTime">Collect Time: {{ collectTime }}</p>
     <div class="add-btn">
-        <el-button type="primary" size="small" @click="beginAdd">新增酒店</el-button>
+        <el-button type="primary" size="small" @click="beginAdd">Refresh</el-button>
     </div>
     <el-table
             :data="memes"
@@ -109,6 +110,7 @@
             meme: {}, // 表单中的酒店数据
             isEdit: false, // 是否是更新
             lastPage: 1,// 上一次查询的页码
+            collectTime: null
         },
         created() {
             this.query(1);
@@ -116,8 +118,10 @@
         methods: {
             beginAdd() {
                 this.isEdit = false;
-                this.meme = {};
-                this.formVisible = true;
+                // this.meme = {};
+                // this.formVisible = true;
+                axios.get("/meme/top");
+                this.query(1);
             },
             query(page) {
                 this.lastPage = page;
@@ -129,6 +133,11 @@
                     .then(resp => {
                         this.memes = resp.data.memes;
                         this.total = resp.data.total;
+                        if (this.memes.length > 0) {
+                            const randomIndex = Math.floor(Math.random() * this.memes.length);
+                            const collectTimeUnix = this.memes[0].collect_time;
+                            this.collectTime = new Date(collectTimeUnix).toLocaleString(); // 将Unix时间戳转换为正常时间格式
+                        }
                     })
                     .catch(err => console.log(err));
             },

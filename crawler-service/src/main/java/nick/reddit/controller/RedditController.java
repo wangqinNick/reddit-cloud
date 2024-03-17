@@ -1,5 +1,7 @@
 package nick.reddit.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import masecla.reddit4j.client.Reddit4J;
 import masecla.reddit4j.client.UserAgentBuilder;
@@ -8,6 +10,7 @@ import masecla.reddit4j.objects.RedditPost;
 import masecla.reddit4j.objects.Sorting;
 import nick.reddit.pojo.Meme;
 import nick.reddit.service.MemeService;
+import nick.reddit.util.DateTimeUtil;
 import nick.reddit.vo.PageResult;
 import nick.reddit.vo.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +50,6 @@ public class RedditController {
             List<Meme> memeList = new ArrayList<>();
             // 获取帖子数据
             List<RedditPost> posts = reddit4J.getSubredditPosts("memes", Sorting.TOP).submit();
-
             long twentyFourHoursAgo = Instant.now().minusSeconds(24 * 60 * 60).getEpochSecond();
             int count = 0;
 
@@ -62,6 +64,7 @@ public class RedditController {
                                     .comments(post.getNumComments())
                                     .created_utc((Long) post.getCreatedUtc())
                                     .permalink(post.getPermalink())
+                                    .collect_time((DateTimeUtil.getCurDate()))
                                     .build()
                     );
                     count++;
@@ -82,7 +85,11 @@ public class RedditController {
     @GetMapping("/list")
     public PageResult listTopMemes(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                    @RequestParam(value = "size", defaultValue = "20") Integer size) {
-        Page<Meme> result = memeService.page(new Page<>(page, size));
+        Page<Meme> paging = new Page<>(page, size);
+        QueryWrapper<Meme> wrapper = Wrappers.query();
+        wrapper.orderByDesc("collect_time").orderByDesc("score");
+
+        Page<Meme> result = memeService.page(paging, wrapper);
         return new PageResult(result.getTotal(), result.getRecords());
     }
 }

@@ -2,7 +2,6 @@ package nick.reddit.util;
 
 import nick.reddit.pojo.Meme;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,7 +21,8 @@ public class ReportGenerator {
             reportContent.append("Created UTC: ").append(meme.getCreated_utc()).append("\n");
             reportContent.append("Comments: ").append(meme.getComments()).append("\n");
             reportContent.append("Author: ").append(meme.getAuthor()).append("\n");
-            reportContent.append("Permalink: ").append(meme.getPermalink()).append("\n\n");
+            reportContent.append("Permalink: ").append(meme.getPermalink()).append("\n");
+            reportContent.append("Collect Time: ").append(meme.getCollect_time()).append("\n\n");
         }
 
         File reportFile = new File("/Users/qinwang/IdeaProjects/reddit-cloud/crawler-service/report.txt");

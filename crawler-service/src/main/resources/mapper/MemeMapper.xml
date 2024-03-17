@@ -13,11 +13,12 @@
             <result property="comments" column="comments" jdbcType="INTEGER"/>
             <result property="author" column="author" jdbcType="VARCHAR"/>
             <result property="permalink" column="permalink" jdbcType="VARCHAR"/>
+            <result property="collect_time" column="collect_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,title,score,
         url,created_utc,comments,
-        author,permalink
+        author,permalink,collect_time
     </sql>
 </mapper>
