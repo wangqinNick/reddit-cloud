@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memes</title>
+    <link href="./css/main.css" rel="stylesheet">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+
+</head>
+<body>
+<div id="app">
+    <h1>Top 20 memes</h1>
+    <div class="add-btn">
+        <el-button type="primary" size="small" @click="beginAdd">新增酒店</el-button>
+    </div>
+    <el-table
+            :data="memes"
+            border
+            style="width: 100%">
+        <el-table-column
+                v-for="h in headers" :key="h.prop"
+                :prop="h.prop"
+                :label="h.text"
+                :width="h.width"
+                :align="h.align"
+        >
+        </el-table-column>
+        <el-table-column label="URL" width="150" align="center">
+            <template slot-scope="scope">
+                <img :src="scope.row.url" alt="Meme Image" style="max-width: 120px; max-height: 120px;">
+            </template>
+        </el-table-column>
+<!--        <el-table-column align="center" label="操作" :width="150">-->
+<!--            <template slot-scope="scope">-->
+<!--                <el-button type="primary" plain icon="el-icon-edit" circle size="mini"-->
+<!--                           @click="handleEdit(scope.$index, scope.row)"></el-button>-->
+<!--                <el-button type="danger" plain icon="el-icon-delete" circle size="mini"-->
+<!--                           @click="handleDelete(scope.$index, scope.row)"></el-button>-->
+<!--            </template>-->
+<!--        </el-table-column>-->
+    </el-table>
+    <el-pagination
+            @current-change="query"
+            style="margin-top: 5px"
+            background
+            :page-size="20"
+            layout="prev, pager, next"
+            :total="total">
+    </el-pagination>
+    <el-dialog title="酒店信息" :visible.sync="formVisible" width="30%" style="padding: 0 20px;">
+        <el-form :model="meme" size="small" label-position="left" :label-width="formLabelWidth">
+            <el-form-item label="酒店名称">
+                <el-input v-model="meme.title" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="酒店地址">
+                <el-input v-model="meme.score" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="酒店价格">
+                <el-input v-model="meme.url" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="酒店评分">
+                <el-input v-model="meme.created_utc" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="酒店品牌">
+                <el-input v-model="meme.comments" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="所在城市">
+                <el-input v-model="meme.author" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="所在商圈">
+                <el-input v-model="meme.permalink" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="所在商圈">
+                <el-input v-model="meme.created_utc" autocomplete="off"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="formVisible = false">取 消</el-button>
+            <el-button type="primary" @click="confirmEdit">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
+<script src="./js/vue.js"></script>
+<script src="./js/axios.min.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    // 设置后台服务地址
+    axios.defaults.baseURL = "http://localhost:8080";
+    axios.defaults.timeout = 3000;
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            headers: [
+                {prop: "title", text: "Title", width: 120, align: "center"},
+                {prop: "score", text: "Score", width: 120, align: "center"},
+                {prop: "url", text: "URL", width: 150, align: "center"},
+                {prop: "comments", text: "Comments", width: 120, align: "center"},
+                {prop: "author", text: "Author", width: 120, align: "center"},
+                {prop: "permalink", text: "Permalink", width: 240, align: "center"}
+            ],
+            memes: [],
+            total: 1000,
+            formVisible: false, // 是否显示表单
+            formLabelWidth: "100px", // 表单label宽度
+            meme: {}, // 表单中的酒店数据
+            isEdit: false, // 是否是更新
+            lastPage: 1,// 上一次查询的页码
+        },
+        created() {
+            this.query(1);
+        },
+        methods: {
+            beginAdd() {
+                this.isEdit = false;
+                this.meme = {};
+                this.formVisible = true;
+            },
+            query(page) {
+                this.lastPage = page;
+                axios.get("/meme/list", {
+                    params: {
+                        page: page, size: 20
+                    }
+                })
+                    .then(resp => {
+                        this.memes = resp.data.memes;
+                        this.total = resp.data.total;
+                    })
+                    .catch(err => console.log(err));
+            },
+            handleEdit(v1, v2) {
+                this.isEdit = true;
+                this.meme = JSON.parse(JSON.stringify(v2));
+                this.formVisible = true;
+            },
+            handleDelete(v1, v2) {
+                this.$confirm('此操作将永久删除酒店信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteById(v2.id);
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            confirmEdit() {
+                if (this.isEdit) {
+                    axios.put("/meme", this.meme)
+                        .then(resp => {
+                            this.$message({
+                                message: '更新成功',
+                                type: 'success'
+                            });
+                            this.formVisible = false;
+                            this.reload();
+                        })
+                        .catch(err => {
+                            this.$message({
+                                message: '更新失败',
+                                type: 'error'
+                            });
+                            console.log(err);
+                        })
+                } else {
+                    axios.post("/meme", this.meme)
+                        .then(resp => {
+                            this.$message({
+                                message: '新增成功',
+                                type: 'success'
+                            });
+                            this.formVisible = false;
+                            this.reload();
+                        })
+                        .catch(err => {
+                            this.$message({
+                                message: '新增失败',
+                                type: 'error'
+                            });
+                            console.log(err);
+                        })
+                }
+
+            },
+            deleteById(id) {
+                axios.delete("/meme/" + id)
+                    .then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        this.reload();
+                    })
+                    .catch(err => {
+                        this.$message({
+                            type: 'error',
+                            message: '删除失败!'
+                        });
+                        console.log(err);
+                    })
+            },
+            reload() {
+                this.query(this.lastPage);
+            }
+        }
+    })
+</script>
+</body>
+</html>
