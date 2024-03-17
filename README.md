@@ -16,8 +16,11 @@ Reddit Cloud is a web service designed to crawl the subreddit r/memes on Reddit,
 
 To set up Reddit Cloud on your local machine, follow these steps:
 
-1. **Clone the repository**: git clone https://github.com/yourusername/reddit-cloud.git
+1. **Clone the repository**: 
+   ```git
+   git clone https://github.com/yourusername/reddit-cloud.git
 2. **Set up environment variables**:
+   ```YML
    server:
    port: 8080
    spring:
@@ -28,6 +31,7 @@ To set up Reddit Cloud on your local machine, follow these steps:
    driver-class-name: com.mysql.cj.jdbc.Driver
 
 3. **Set up a database**:
+   ```MySQL
    CREATE TABLE tb_memes
    (
    id          INT AUTO_INCREMENT PRIMARY KEY,
