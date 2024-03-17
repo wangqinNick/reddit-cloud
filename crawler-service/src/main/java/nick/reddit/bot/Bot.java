@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class Bot extends TelegramLongPollingBot {
@@ -40,9 +41,8 @@ public class Bot extends TelegramLongPollingBot {
 
     public void sendDocument(Long who) {
         SendDocument sendDocument = new SendDocument();
-        sendDocument.setChatId(who.toString()); // 设置聊天ID
+        sendDocument.setChatId(who.toString());
 
-//        List<Meme> memes = memeService.list();
         Page<Meme> paging = new Page<>(1, 20);
         QueryWrapper<Meme> wrapper = Wrappers.query();
         wrapper.orderByDesc("collect_time").orderByDesc("score");
@@ -50,13 +50,12 @@ public class Bot extends TelegramLongPollingBot {
         Page<Meme> result = memeService.page(paging, wrapper);
         File file = reportGenerator.generateReport(result.getRecords());
 
-        sendDocument.setDocument(new InputFile(file)); // 设置要发送的文件，这里需要提供文件路径
-//        sendDocument.setDocument(new InputFile(new File("/Users/qinwang/IdeaProjects/reddit-cloud/crawler-service/aaa.txt"))); // 设置要发送的文件，这里需要提供文件路径
+        sendDocument.setDocument(new InputFile(file));
 
         try {
-            execute(sendDocument); // 实际发送文件
+            execute(sendDocument);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e); // 发生异常时抛出运行时异常
+            throw new RuntimeException(e);
         }
     }
 
@@ -66,7 +65,6 @@ public class Bot extends TelegramLongPollingBot {
         User user = message.getFrom();
         Long id = user.getId();
 
-        System.out.println(user.getFirstName() + " wrote " + message.getText());
         String text = message.getText();
         this.sendDocument(id);
     }

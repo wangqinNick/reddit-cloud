@@ -48,7 +48,6 @@ public class RedditController {
             reddit4J.userlessConnect();
 
             List<Meme> memeList = new ArrayList<>();
-            // 获取帖子数据
             List<RedditPost> posts = reddit4J.getSubredditPosts("memes", Sorting.TOP).submit();
             long twentyFourHoursAgo = Instant.now().minusSeconds(24 * 60 * 60).getEpochSecond();
             int count = 0;
@@ -82,6 +81,13 @@ public class RedditController {
         else return R.error("Crawl failed");
     }
 
+    /**
+     * List top Memes from the latest crawling
+     *
+     * @param page current page
+     * @param size page size
+     * @return PageResult
+     */
     @GetMapping("/list")
     public PageResult listTopMemes(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                    @RequestParam(value = "size", defaultValue = "20") Integer size) {
